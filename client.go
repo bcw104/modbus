@@ -410,7 +410,8 @@ func (mb *client) ReadFIFOQueue(address uint16) (results []byte, err error) {
 		FunctionCode: FuncCodeReadFIFOQueue,
 		Data:         dataBlock(address),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -436,11 +437,14 @@ func (mb *client) ReadFIFOQueue(address uint16) (results []byte, err error) {
 
 // send sends request and checks possible exception in the response.
 func (mb *client) send(request *ProtocolDataUnit) (response *ProtocolDataUnit, err error) {
-	aduRequest, err := mb.packager.Encode(request)
+	var aduRequest []byte
+	aduRequest, err = mb.packager.Encode(request)
 	if err != nil {
 		return
 	}
-	aduResponse, err := mb.transporter.Send(aduRequest)
+
+	var aduResponse []byte
+	aduResponse, err = mb.transporter.Send(aduRequest)
 	if err != nil {
 		return
 	}

@@ -165,7 +165,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 	// Send data
-	mb.logf("modbus: sending % x", aduRequest)
+	mb.logf("modbus: send % x", aduRequest)
 	if _, err = mb.conn.Write(aduRequest); err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 	aduResponse = data[:length]
-	mb.logf("modbus: received % x\n", aduResponse)
+	mb.logf("modbus: recv % x\n", aduResponse)
 	return
 }
 
@@ -203,6 +203,10 @@ func (mb *tcpTransporter) Connect() error {
 	defer mb.mu.Unlock()
 
 	return mb.connect()
+}
+
+func (mb *tcpTransporter) IsConnected() bool {
+	return mb.conn != nil
 }
 
 func (mb *tcpTransporter) connect() error {
