@@ -47,6 +47,10 @@ type tcprtuTransporter struct {
 	lastActivity time.Time
 }
 
+func (mb *tcprtuTransporter) SetTimeout(timeout time.Duration) {
+	mb.Timeout = timeout
+}
+
 // Send sends data to server and ensures response length is greater than header length.
 func (mb *tcprtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
 	// Establish a new connection if not connected

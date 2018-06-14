@@ -55,6 +55,10 @@ type tcpPackager struct {
 	SlaveId byte
 }
 
+func (mb *tcpPackager) SetSlaveId(slaveID byte) {
+	mb.SlaveId = slaveID
+}
+
 // Encode adds modbus application protocol header:
 //  Transaction identifier: 2 bytes
 //  Protocol identifier: 2 bytes
@@ -142,6 +146,10 @@ type tcpTransporter struct {
 	conn         net.Conn
 	closeTimer   *time.Timer
 	lastActivity time.Time
+}
+
+func (mb *tcpTransporter) SetTimeout(timeout time.Duration) {
+	mb.Timeout = timeout
 }
 
 // Send sends data to server and ensures response length is greater than header length.

@@ -9,6 +9,7 @@ package modbus
 
 import (
 	"fmt"
+	"time"
 )
 
 const (
@@ -85,9 +86,13 @@ type Packager interface {
 	Encode(pdu *ProtocolDataUnit) (adu []byte, err error)
 	Decode(adu []byte) (pdu *ProtocolDataUnit, err error)
 	Verify(aduRequest []byte, aduResponse []byte) (err error)
+	SetSlaveId(slaveID byte)
 }
 
 // Transporter specifies the transport layer.
 type Transporter interface {
 	Send(aduRequest []byte) (aduResponse []byte, err error)
+	IsConnected() bool
+	Close() error
+	SetTimeout(timeout time.Duration)
 }

@@ -46,6 +46,10 @@ type asciiPackager struct {
 	SlaveId byte
 }
 
+func (mb *asciiPackager) SetSlaveId(slaveID byte) {
+	mb.SlaveId = slaveID
+}
+
 // Encode encodes PDU in a ASCII frame:
 //  Start           : 1 char
 //  Address         : 2 chars
@@ -158,6 +162,10 @@ func (mb *asciiPackager) Decode(adu []byte) (pdu *ProtocolDataUnit, err error) {
 // asciiSerialTransporter implements Transporter interface.
 type asciiSerialTransporter struct {
 	serialPort
+}
+
+func (mb *asciiSerialTransporter) SetTimeout(timeout time.Duration) {
+	mb.Timeout = timeout
 }
 
 func (mb *asciiSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {

@@ -48,6 +48,10 @@ type dtuTransporter struct {
 	lastActivity time.Time
 }
 
+func (mb *dtuTransporter) SetTimeout(timeout time.Duration) {
+	mb.Timeout = timeout
+}
+
 // Send sends data to dtu client and read response.
 func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
 	// Establish a new connection if not connected

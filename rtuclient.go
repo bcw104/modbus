@@ -44,6 +44,10 @@ type rtuPackager struct {
 	SlaveId byte
 }
 
+func (mb *rtuPackager) SetSlaveId(slaveID byte) {
+	mb.SlaveId = slaveID
+}
+
 // Encode encodes PDU in a RTU frame:
 //  Slave Address   : 1 byte
 //  Function        : 1 byte
@@ -108,6 +112,10 @@ func (mb *rtuPackager) Decode(adu []byte) (pdu *ProtocolDataUnit, err error) {
 // rtuSerialTransporter implements Transporter interface.
 type rtuSerialTransporter struct {
 	serialPort
+}
+
+func (mb *rtuSerialTransporter) SetTimeout(timeout time.Duration) {
+	mb.Timeout = timeout
 }
 
 func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
