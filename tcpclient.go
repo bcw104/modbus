@@ -163,7 +163,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 	// Set timer to close when idle
 	mb.lastActivity = time.Now()
-	mb.startCloseTimer()
+	// mb.startCloseTimer()
 	// Set write and read timeout
 	var timeout time.Time
 	if mb.Timeout > 0 {
@@ -182,6 +182,9 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	if _, err = io.ReadFull(mb.conn, data[:tcpHeaderSize]); err != nil {
 		return
 	}
+
+	mb.startCloseTimer()
+
 	// Read length, ignore transaction & protocol id (4 bytes)
 	length := int(binary.BigEndian.Uint16(data[4:]))
 	if length <= 0 {

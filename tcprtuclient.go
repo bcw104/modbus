@@ -59,7 +59,6 @@ func (mb *tcprtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err er
 	}
 	// Start the timer to close when idle
 	mb.lastActivity = time.Now()
-	mb.startCloseTimer()
 
 	// Set write and read timeout
 	var timeout time.Time
@@ -91,6 +90,9 @@ func (mb *tcprtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err er
 	if err != nil {
 		return
 	}
+
+	mb.startCloseTimer()
+
 	//if the function is correct
 	if data[1] == function {
 		//we read the rest of the bytes
