@@ -163,7 +163,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 	// Set timer to close when idle
 	mb.lastActivity = time.Now()
-	// mb.startCloseTimer()
+	mb.startCloseTimer()
 	// Set write and read timeout
 	var timeout time.Time
 	if mb.Timeout > 0 {
@@ -183,7 +183,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 
-	mb.startCloseTimer()
+	mb.resetCloseTimer()
 
 	// Read length, ignore transaction & protocol id (4 bytes)
 	length := int(binary.BigEndian.Uint16(data[4:]))
@@ -238,7 +238,16 @@ func (mb *tcpTransporter) startCloseTimer() {
 	}
 	if mb.closeTimer == nil {
 		mb.closeTimer = time.AfterFunc(mb.IdleTimeout, mb.closeIdle)
-	} else {
+		// } else {
+		// 	mb.closeTimer.Reset(mb.IdleTimeout)
+	}
+}
+
+func (mb *tcpTransporter) resetCloseTimer() {
+	if mb.IdleTimeout <= 0 {
+		return
+	}
+	if mb.closeTimer != nil {
 		mb.closeTimer.Reset(mb.IdleTimeout)
 	}
 }
@@ -287,12 +296,15 @@ func (mb *tcpTransporter) closeIdle() {
 	mb.mu.Lock()
 	defer mb.mu.Unlock()
 
-	if mb.IdleTimeout <= 0 {
-		return
-	}
-	idle := time.Now().Sub(mb.lastActivity)
-	if idle >= mb.IdleTimeout {
-		mb.logf("modbus: closing connection due to idle timeout: %v", idle)
-		mb.close()
-	}
+	// if mb.IdleTimeout <= 0 {
+	// 	return
+	// }
+	// idle := time.Now().Sub(mb.lastActivity)
+	// if idle >= mb.IdleTimeout {
+	// 	mb.logf("modbus: closing connection due to idle timeout: %v", idle)
+	// 	mb.close()
+	// }
+	mb.closeTimer = nil
+	mb.logf("modbus: closing connection due to idle timeout: %v", mb.IdleTimeout)
+	mb.close()
 }

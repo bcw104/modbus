@@ -48,6 +48,10 @@ type dtuTransporter struct {
 	lastActivity time.Time
 }
 
+func (mb *dtuTransporter) SetTimeout(timeout time.Duration) {
+	mb.Timeout = timeout
+}
+
 // Send sends data to dtu client and read response.
 func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
 	// Establish a new connection if not connected
@@ -56,6 +60,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 	// Start the timer to close when idle
 	mb.lastActivity = time.Now()
+	mb.startCloseTimer()
 
 	// Set write and read timeout
 	var timeout time.Time
@@ -88,7 +93,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 
-	mb.startCloseTimer()
+	mb.resetCloseTimer()
 
 	//if the function is correct
 	if data[1] == function {
@@ -157,7 +162,16 @@ func (mb *dtuTransporter) startCloseTimer() {
 	}
 	if mb.closeTimer == nil {
 		mb.closeTimer = time.AfterFunc(mb.IdleTimeout, mb.closeIdle)
-	} else {
+		// } else {
+		// 	mb.closeTimer.Reset(mb.IdleTimeout)
+	}
+}
+
+func (mb *dtuTransporter) resetCloseTimer() {
+	if mb.IdleTimeout <= 0 {
+		return
+	}
+	if mb.closeTimer != nil {
 		mb.closeTimer.Reset(mb.IdleTimeout)
 	}
 }
@@ -206,12 +220,16 @@ func (mb *dtuTransporter) closeIdle() {
 	mb.mu.Lock()
 	defer mb.mu.Unlock()
 
-	if mb.IdleTimeout <= 0 {
-		return
-	}
-	idle := time.Now().Sub(mb.lastActivity)
-	if idle >= mb.IdleTimeout {
-		mb.logf("modbus: closing connection due to idle timeout: %v", idle)
-		mb.close()
-	}
+	// if mb.IdleTimeout <= 0 {
+	// 	return
+	// }
+	// idle := time.Now().Sub(mb.lastActivity)
+	// if idle >= mb.IdleTimeout {
+	// 	mb.logf("modbus: closing connection due to idle timeout: %v", idle)
+	// 	mb.close()
+	// }
+
+	mb.closeTimer = nil
+	mb.logf("modbus: closing connection due to idle timeout: %v", mb.IdleTimeout)
+	mb.close()
 }
