@@ -72,7 +72,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 
 	// Send the request
-	mb.logf("modbus: sending % x", aduRequest)
+	mb.logf("modbus: send % x", aduRequest)
 	if _, err = mb.conn.Write(aduRequest); err != nil {
 		mb.close()
 		return
@@ -118,7 +118,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 	aduResponse = data[:n]
-	mb.logf("modbus: received % x\n", aduResponse)
+	mb.logf("modbus: recv % x\n", aduResponse)
 	return
 }
 
