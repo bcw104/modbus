@@ -99,7 +99,7 @@ func (mb *rtuPackager) Decode(adu []byte) (pdu *ProtocolDataUnit, err error) {
 	crc.reset().pushBytes(adu[0 : length-2])
 	checksum := uint16(adu[length-1])<<8 | uint16(adu[length-2])
 	if checksum != crc.value() {
-		err = fmt.Errorf("modbus: response crc '%v' does not match expected '%v'", checksum, crc.value())
+		err = fmt.Errorf("modbus: response crc '%x' does not match expected '%x'", checksum, crc.value())
 		return
 	}
 	// Function code & data
