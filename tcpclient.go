@@ -163,7 +163,7 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 	// Set timer to close when idle
 	mb.lastActivity = time.Now()
-	mb.startCloseTimer()
+	// mb.startCloseTimer()
 	// Set write and read timeout
 	var timeout time.Time
 	if mb.Timeout > 0 {
@@ -229,6 +229,7 @@ func (mb *tcpTransporter) connect() error {
 		}
 		mb.conn = conn
 	}
+	mb.startCloseTimer()
 	return nil
 }
 
@@ -238,8 +239,6 @@ func (mb *tcpTransporter) startCloseTimer() {
 	}
 	if mb.closeTimer == nil {
 		mb.closeTimer = time.AfterFunc(mb.IdleTimeout, mb.closeIdle)
-		// } else {
-		// 	mb.closeTimer.Reset(mb.IdleTimeout)
 	}
 }
 
@@ -257,6 +256,10 @@ func (mb *tcpTransporter) Close() error {
 	mb.mu.Lock()
 	defer mb.mu.Unlock()
 
+	if mb.closeTimer != nil {
+		mb.closeTimer.Stop()
+		mb.closeTimer = nil
+	}
 	return mb.close()
 }
 

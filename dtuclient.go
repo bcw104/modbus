@@ -60,7 +60,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 	// Start the timer to close when idle
 	mb.lastActivity = time.Now()
-	mb.startCloseTimer()
+	// mb.startCloseTimer()
 
 	// Set write and read timeout
 	var timeout time.Time
@@ -93,6 +93,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		return
 	}
 
+	// 正常收到数据重置空闲定时器
 	mb.resetCloseTimer()
 
 	//if the function is correct
@@ -119,6 +120,7 @@ func (mb *dtuTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 	}
 	aduResponse = data[:n]
 	mb.logf("modbus: recv % x\n", aduResponse)
+
 	return
 }
 
@@ -144,6 +146,7 @@ func (mb *dtuTransporter) ChangeConn(conn net.Conn) error {
 	}
 
 	mb.conn = conn
+	mb.startCloseTimer()
 	return nil
 }
 
@@ -153,6 +156,7 @@ func (mb *dtuTransporter) connect() error {
 	if mb.conn == nil {
 		return errors.New("dtu not connected")
 	}
+	mb.startCloseTimer()
 	return nil
 }
 
@@ -162,8 +166,6 @@ func (mb *dtuTransporter) startCloseTimer() {
 	}
 	if mb.closeTimer == nil {
 		mb.closeTimer = time.AfterFunc(mb.IdleTimeout, mb.closeIdle)
-		// } else {
-		// 	mb.closeTimer.Reset(mb.IdleTimeout)
 	}
 }
 
@@ -211,6 +213,11 @@ func (mb *dtuTransporter) close() (err error) {
 	if mb.conn != nil {
 		err = mb.conn.Close()
 		mb.conn = nil
+
+		if mb.closeTimer != nil {
+			mb.closeTimer.Stop()
+			mb.closeTimer = nil
+		}
 	}
 	return
 }
