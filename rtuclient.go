@@ -128,7 +128,7 @@ func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err
 	mb.serialPort.startCloseTimer()
 
 	// Send the request
-	mb.serialPort.logf("modbus: send % x\n", aduRequest)
+	mb.serialPort.logf("modbus: send % x", aduRequest)
 	if _, err = mb.port.Write(aduRequest); err != nil {
 		return
 	}

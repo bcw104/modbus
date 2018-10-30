@@ -47,7 +47,8 @@ func (mb *client) ReadCoils(address, quantity uint16) (results []byte, err error
 		FunctionCode: FuncCodeReadCoils,
 		Data:         dataBlock(address, quantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -78,7 +79,8 @@ func (mb *client) ReadDiscreteInputs(address, quantity uint16) (results []byte, 
 		FunctionCode: FuncCodeReadDiscreteInputs,
 		Data:         dataBlock(address, quantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -109,7 +111,8 @@ func (mb *client) ReadHoldingRegisters(address, quantity uint16) (results []byte
 		FunctionCode: FuncCodeReadHoldingRegisters,
 		Data:         dataBlock(address, quantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -140,7 +143,8 @@ func (mb *client) ReadInputRegisters(address, quantity uint16) (results []byte, 
 		FunctionCode: FuncCodeReadInputRegisters,
 		Data:         dataBlock(address, quantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -172,7 +176,8 @@ func (mb *client) WriteSingleCoil(address, value uint16) (results []byte, err er
 		FunctionCode: FuncCodeWriteSingleCoil,
 		Data:         dataBlock(address, value),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -208,7 +213,8 @@ func (mb *client) WriteSingleRegister(address, value uint16) (results []byte, er
 		FunctionCode: FuncCodeWriteSingleRegister,
 		Data:         dataBlock(address, value),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -250,7 +256,8 @@ func (mb *client) WriteMultipleCoils(address, quantity uint16, value []byte) (re
 		FunctionCode: FuncCodeWriteMultipleCoils,
 		Data:         dataBlockSuffix(value, address, quantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -292,7 +299,8 @@ func (mb *client) WriteMultipleRegisters(address, quantity uint16, value []byte)
 		FunctionCode: FuncCodeWriteMultipleRegisters,
 		Data:         dataBlockSuffix(value, address, quantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -330,7 +338,8 @@ func (mb *client) MaskWriteRegister(address, andMask, orMask uint16) (results []
 		FunctionCode: FuncCodeMaskWriteRegister,
 		Data:         dataBlock(address, andMask, orMask),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
@@ -383,7 +392,8 @@ func (mb *client) ReadWriteMultipleRegisters(readAddress, readQuantity, writeAdd
 		FunctionCode: FuncCodeReadWriteMultipleRegisters,
 		Data:         dataBlockSuffix(value, readAddress, readQuantity, writeAddress, writeQuantity),
 	}
-	response, err := mb.send(&request)
+	var response *ProtocolDataUnit
+	response, err = mb.send(&request)
 	if err != nil {
 		return
 	}
