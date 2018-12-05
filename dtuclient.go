@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-type DTUServer interface {
-	GetConn(dtuID string) net.Conn
+type DTUConnector interface {
+	GetConn() net.Conn
 }
 
 // DTUClientHandler  implements Packager and Transporter interface.
@@ -37,8 +37,8 @@ func DTUClient(dtuID string, conn net.Conn) Client {
 
 // dtuTransporter implements Transporter interface.
 type dtuTransporter struct {
-	dtuID     string
-	DTUServer DTUServer
+	dtuID        string
+	DTUConnector DTUConnector
 	// Connect & Read timeout
 	Timeout time.Duration
 	// Idle timeout to close the connection
@@ -145,15 +145,16 @@ func (mb *dtuTransporter) IsConnected() bool {
 func (mb *dtuTransporter) connect() error {
 	mb.mu.Lock()
 	defer mb.mu.Unlock()
-	if mb.conn == nil {
-		if mb.DTUServer != nil {
-			mb.conn = mb.DTUServer.GetConn(mb.dtuID)
-			if mb.conn == nil {
-				return errors.New("dtu not connected")
-			}
-		} else {
-			return errors.New("dtu server is nil")
+	// if mb.conn == nil {
+	// }
+	if mb.DTUConnector != nil {
+		mb.conn = mb.DTUConnector.GetConn()
+		// mb.conn = mb.DTUServer.GetConn(mb.dtuID)
+		if mb.conn == nil {
+			return errors.New("dtu not connected")
 		}
+	} else {
+		return errors.New("dtu server is nil")
 	}
 	mb.startCloseTimer()
 	return nil
