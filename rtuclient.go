@@ -118,6 +118,26 @@ func (mb *rtuSerialTransporter) SetTimeout(timeout time.Duration) {
 	mb.Timeout = timeout
 }
 
+func (mb *rtuSerialTransporter) Abandon() {
+	mb.mu.Lock()
+	defer mb.mu.Unlock()
+
+	if mb.port == nil {
+		return
+	}
+
+	if mb.Timeout <= 0 {
+		mb.Timeout = 5 * time.Second
+	}
+	var tempBuf [256]byte
+	for {
+		n, err := io.ReadFull(mb.port, tempBuf[:])
+		if n < 256 || err != nil {
+			break
+		}
+	}
+}
+
 func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
 	// Make sure port is connected
 	if err = mb.serialPort.connect(); err != nil {

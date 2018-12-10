@@ -152,6 +152,36 @@ func (mb *tcpTransporter) SetTimeout(timeout time.Duration) {
 	mb.Timeout = timeout
 }
 
+func (mb *tcpTransporter) Abandon() {
+	mb.mu.Lock()
+	defer mb.mu.Unlock()
+
+	if mb.conn == nil {
+		return
+	}
+
+	lastActivity := time.Now()
+	// mb.startCloseTimer()
+	// Set write and read timeout
+	var timeout time.Time
+	if mb.Timeout > 0 {
+		timeout = lastActivity.Add(mb.Timeout)
+	} else {
+		timeout = lastActivity.Add(3 * time.Second)
+	}
+	if err := mb.conn.SetDeadline(timeout); err != nil {
+		return
+	}
+
+	var tempBuf [256]byte
+	for {
+		n, err := io.ReadFull(mb.conn, tempBuf[:])
+		if n < 256 || err != nil {
+			break
+		}
+	}
+}
+
 // Send sends data to server and ensures response length is greater than header length.
 func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error) {
 	mb.mu.Lock()

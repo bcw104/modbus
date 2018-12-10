@@ -95,4 +95,5 @@ type Transporter interface {
 	IsConnected() bool
 	Close() error
 	SetTimeout(timeout time.Duration)
+	Abandon()
 }
